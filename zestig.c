@@ -385,9 +385,9 @@ static void do_entry(const u8 *entry, const char *parent_path, int entry_num)
 void print_help()
 {
   printf("usage: zestig [options] nandfilename\n");
-	printf("Valid options:\n");
-	printf("  --name=NAME    Load wii-specific keys from ~/.wii/NAME\n");
-	printf("  --otp=OTP      Load keys from the given OTP dump instead of using ~/.wii/\n");
+  printf("Valid options:\n");
+  printf("  --name=NAME    Load wii-specific keys from ~/.wii/NAME\n");
+  printf("  --otp=OTP      Load keys from the given OTP dump instead of using ~/.wii/\n");
   printf("  --nandotp      Load keys from nand dump instead of using ~/.wii/\n");
   printf("  --oob          Use out of band (extra data) if it exists\n");
   printf("  --ecc          Verifies ecc data. (Requires --oob)\n");
@@ -396,10 +396,10 @@ void print_help()
   printf("  --sffs=NUM     Force use of previous by NUM sffs.  (If block NUM=1 and block 4 is being");
   printf("                 extracted, extract block 3 instead)\n");
   printf("  --out=PATH     Where to store dumped files. Defaults to ./wiiflash/");
-	printf("  --verbose      Shows file listing, repeat for more details.\n");
-	printf("\n");
-	printf("  --help         Display this help and exit\n");
-	printf("  --version      Print version and exit\n");
+  printf("  --verbose      Shows file listing, repeat for more details.\n");
+  printf("\n");
+  printf("  --help         Display this help and exit\n");
+  printf("  --version      Print version and exit\n");
 }
 
 int main(int argc, char **argv)
@@ -413,19 +413,19 @@ int main(int argc, char **argv)
 	printf("zestig\n\n");
 	
   static const struct option wiifsck_options[] = {
-		{ "help", no_argument, 0, 'h' },
-		{ "version", no_argument, 0, 'V' },
+    { "help", no_argument, 0, 'h' },
+    { "version", no_argument, 0, 'V' },
     { "ecc", no_argument, 0, 'E' },
     { "hmac", no_argument, 0, 'H' },
     { "boot1", no_argument, 0, 'b' },
     { "sffs", required_argument, 0, 's' },
-		{ "name", required_argument, 0, 'n' },
+    { "name", required_argument, 0, 'n' },
     { "oob", no_argument, 0, 'o' },
-		{ "otp", required_argument, 0, 'O' },
+    { "otp", required_argument, 0, 'O' },
     { "out", required_argument, 0, 'p' },
     { "nandotp", no_argument, 0, 'N' },
-		{ "verbose", no_argument, 0, 'v' },
-		{ 0, 0, 0, 0 }
+    { "verbose", no_argument, 0, 'v' },
+    { 0, 0, 0, 0 }
 	};
   if(argc==1)
   {
@@ -499,14 +499,14 @@ int main(int argc, char **argv)
   }
   else if(otp[0] != 0)
   {
-    int fd = _open(otp, O_RDONLY);
-    if(fd<0)
+    HANDLE otpfile = CreateFile(otp, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(otpfile == INVALID_HANDLE_VALUE)
       fatal("Could not open otp file %s",otp);
-    HANDLE otpmapping = CreateFileMapping((HANDLE)_get_osfhandle(fd), NULL, PAGE_READONLY, 0, 0, NULL);
-    void *otpdata = MapViewOfFile(otpmapping, FILE_MAP_READ, 0, 0, 0x100);
+    HANDLE otpmapping = CreateFileMapping(otpfile, NULL, PAGE_READONLY, 0, 0, NULL);
+    void *otpdata = MapViewOfFile(otpmapping, FILE_MAP_READ, 0, 0, 0);
     if(otpdata==NULL)
       fatal("Could not allocate memory for otp file %s",otp);
-    close(fd);
+    CloseHandle(otpfile);
     memcpy(hash,otpdata+0x24,20);
     memcpy(&console_id,otpdata,4);
     memcpy(key,otpdata+0x58,16);
@@ -515,7 +515,6 @@ int main(int argc, char **argv)
     if (UnmapViewOfFile(otpdata)) {
       otpdata = NULL;
       CloseHandle(otpmapping);
-      _close(fd);
     }
   }
   else
