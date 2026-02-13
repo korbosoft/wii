@@ -6,7 +6,7 @@ ZESTIGL = ecc.o sha1.o fs_hmac.o
 DEFINES = -DLARGE_FILES -D_FILE_OFFSET_BITS=64
 LIBS = -lcrypto
 
-CC = gcc
+CC = x86_64-w64-mingw32-gcc
 CFLAGS = -Wall -W -Os
 LDFLAGS =
 
@@ -16,7 +16,7 @@ OBJS = $(patsubst %,%.o,$(PROGS) $(ZESTIG)) $(COMMON) $(ZESTIGL)
 all: $(PROGS) $(ZESTIG)
 
 $(PROGS): %: %.o $(COMMON) Makefile
-	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(LIBS) -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(LIBS) -lcrypto -o $@
 
 $(ZESTIG): %: %.o $(COMMON) $(ZESTIGL) Makefile
 	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(ZESTIGL) $(LIBS) -o $@

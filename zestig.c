@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/mman.h>
+#include <windows.h>
+#include <memoryapi.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -350,7 +351,7 @@ static void do_dir(const u8 *entry, const char *parent_path)
   }
 
 	if (path[1])
-		mkdir(path + 1, 0777);
+		mkdir(path + 1);
 
 	if (sub != 0xffff)
 		do_entry(fst + 0x20*sub, path, sub);
@@ -498,10 +499,11 @@ int main(int argc, char **argv)
   }
   else if(otp[0] != 0)
   {
-    int fd = open(otp, O_RDONLY);
+    int fd = _open(otp, O_RDONLY);
     if(fd<0)
       fatal("Could not open otp file %s",otp);
-    void *otpdata = mmap(0, 0x100, PROT_READ, MAP_SHARED, fd, 0);
+    HANDLE otpmapping = CreateFileMapping((HANDLE)_get_osfhandle(fd), NULL, PAGE_READONLY, 0, 0, NULL);
+    void *otpdata = MapViewOfFile(otpmapping, FILE_MAP_READ, 0, 0, 0x100);
     if(otpdata==NULL)
       fatal("Could not allocate memory for otp file %s",otp);
     close(fd);
@@ -510,6 +512,11 @@ int main(int argc, char **argv)
     memcpy(key,otpdata+0x58,16);
     memcpy(hmac,otpdata+0x44,20);  //Why not, its already here.
     otp_used = 1;
+    if (UnmapViewOfFile(otpdata)) {
+      otpdata = NULL;
+      CloseHandle(otpmapping);
+      _close(fd);
+    }
   }
   else
   {
@@ -598,12 +605,12 @@ int main(int argc, char **argv)
   	fst = fat + 0x10000;
   if(nanddump[0]==0)
   {
-    mkdir("wiiflash",0777);
+    mkdir("wiiflash");
     chdir("wiiflash");
   }
   else
   {
-  	mkdir(nanddump, 0777);
+  	mkdir(nanddump);
   	chdir(nanddump);
   }
 	do_entry(fst, "", 0);
