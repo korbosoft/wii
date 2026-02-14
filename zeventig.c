@@ -69,7 +69,7 @@ static void do_app_file(u8 *app, u32 app_len, u8 *tik, u8 *tmd)
 	decrypt_title_key(tik, title_key);
 
 	sprintf(name, "%016llx", be64(tmd + 0x018c));
-	if (mkdir(name, 0777))
+	if (mkdir(name))
 		fatal("mkdir %s", name);
 	if (chdir(name))
 		fatal("chdir %s", name);
