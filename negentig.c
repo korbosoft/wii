@@ -256,7 +256,7 @@ static void do_fst_file(const char *name, u64 offset, u64 size)
 		if (dec == 0)
 			fatal("malloc");
 
-		do_yaz0(data, size, dec, dec_size);
+		do_yaz0(data, dec, dec_size);
 
 		free(data);
 		data = dec;

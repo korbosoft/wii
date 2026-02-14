@@ -6,7 +6,7 @@
 
 static unsigned char hmac_key[20];
 
-void hmac_init(hmac_ctx *ctx, const char *key, int key_size) {
+void hmac_init(hmac_ctx *ctx, const unsigned char *key, int key_size) {
 
 	int i;
 
@@ -27,7 +27,7 @@ void hmac_update(hmac_ctx *ctx, const u8 *data, int size)
 	SHA1Input(&ctx->hash_ctx,data,size);
 }
 
-void hmac_final(hmac_ctx *ctx, unsigned char *hmac) 
+void hmac_final(hmac_ctx *ctx, unsigned char *hmac)
 {
 	int i;
 	unsigned char hash[0x14];
@@ -65,7 +65,7 @@ void hmac_print(FILE *f,const unsigned char *hmac){
 	fprintf(f,"\n");
 }
 
-void fs_hmac_set_key(const char *key, int key_size)
+void fs_hmac_set_key(const unsigned char *key, int key_size)
 {
 	memset(hmac_key,0,0x14);
 	memcpy(hmac_key,key,key_size<0x14?key_size:0x14);

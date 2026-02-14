@@ -220,7 +220,7 @@ static void print_entry(const u8 *entry)
 {
 	char name[13];
 	u8 mode, attr;
-	u16 sub, sib;
+	// u16 sub, sib;
 	u32 size;
 	u16 x1, uid, gid;
 	u32 x3;
@@ -229,8 +229,8 @@ static void print_entry(const u8 *entry)
 	name[12] = 0;
 	mode = entry[0x0c];
 	attr = entry[0x0d];
-	sub = be16(entry + 0x0e);
-	sib = be16(entry + 0x10);
+	// sub = be16(entry + 0x0e);
+	// sib = be16(entry + 0x10);
 	size = be32(entry + 0x12);
 	x1 = be16(entry + 0x16);
 	uid = be16(entry + 0x18);
@@ -327,12 +327,12 @@ static void do_dir(const u8 *entry, const char *parent_path)
 {
 	char name[13];
 	char path[256];
-	u16 sub, sib;
+	u16 sub/*, sib*/;
 
 	memcpy(name, entry, 12);
 	name[12] = 0;
 	sub = be16(entry + 0x0e);
-	sib = be16(entry + 0x10);
+	// sib = be16(entry + 0x10);
   
   if (parent_path[strlen(parent_path) - 1] == '/' || name[0] == '/')
   	sprintf(path, "%s%s", parent_path, name);
@@ -404,7 +404,7 @@ void print_help()
 
 int main(int argc, char **argv)
 {
-  char path[256];
+  // char path[256];
   char wiiname[256] = "default";
   char otp[256] = {0};
   char nanddump[256] = {0};

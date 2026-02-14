@@ -5,7 +5,7 @@
 #include "tools.h"
 
 #include <stddef.h>	// to accommodate certain broken versions of openssl
-#include <openssl/md5.h>
+#include <openssl/evp.h>
 #include <openssl/aes.h>
 #include <openssl/sha.h>
 #include <stdarg.h>
@@ -61,12 +61,12 @@ void wbe64(u8 *p, u64 x)
 
 void md5(u8 *data, u32 len, u8 *hash)
 {
-	MD5(data, len, hash);
+	EVP_Q_digest(NULL, "MD5", NULL, data, len, hash, NULL);
 }
 
 void sha(u8 *data, u32 len, u8 *hash)
 {
-	SHA1(data, len, hash);
+	EVP_Q_digest(NULL, "SHA1", NULL, data, len, hash, NULL);
 }
 
 int get_wii_key(const char *wiiname, const char *keyname, u8 *key, u32 len, int optional)
@@ -269,14 +269,14 @@ static int check_hash(u8 *h, u8 *sig, u8 *key)
 static u8 *find_cert_in_chain(u8 *sub, u8 *cert, u32 cert_len)
 {
 	char parent[64];
-	char *child;
+	u8 *child;
 	u32 sig_len, sub_len;
 	u8 *p;
-	u8 *issuer;
+	char *issuer;
 
-	strncpy(parent, sub, sizeof parent);
+	strncpy(parent, (const char *)sub, sizeof parent);
 	parent[sizeof parent - 1] = 0;
-	child = strrchr(parent, '-');
+	child = (u8 *)strrchr(parent, '-');
 	if (child)
 		*child++ = 0;
 	else {
@@ -288,13 +288,13 @@ static u8 *find_cert_in_chain(u8 *sub, u8 *cert, u32 cert_len)
 		sig_len = get_sig_len(p);
 		if (sig_len == 0)
 			return 0;
-		issuer = p + sig_len;
-		sub_len = get_sub_len(issuer);
+		issuer = (char *)(p + sig_len);
+		sub_len = get_sub_len((u8 *)issuer);
 		if (sub_len == 0)
 			return 0;
 
 		if (strcmp(parent, issuer) == 0
-		    && strcmp(child, issuer + 0x44) == 0)
+		    && strcmp((const char *)child, issuer + 0x44) == 0)
 			return p;
 	}
 
@@ -322,8 +322,8 @@ int check_cert_chain(u8 *data, u32 data_len, u8 *cert, u32 cert_len)
 		return -2;
 
 	for (;;) {
-fprintf(stderr, ">>>>>> checking sig by %s...\n", sub);
-		if (strcmp(sub, "Root") == 0) {
+		fprintf(stderr, ">>>>>> checking sig by %s...\n", sub);
+		if (strcmp((const char *)sub, "Root") == 0) {
 			key = get_root_key();
 			sha(sub, sub_len, h);
 			if (be32(sig) != 0x10000)
@@ -357,7 +357,7 @@ fprintf(stderr, ">>>>>> checking sig by %s...\n", sub);
 // compression
 //
 
-void do_yaz0(u8 *in, u32 in_size, u8 *out, u32 out_size)
+void do_yaz0(u8 *in, u8 *out, u32 out_size)
 {
 	u32 nout;
 	u8 bits;

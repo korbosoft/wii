@@ -47,7 +47,7 @@ int check_ecdsa(u8 *Q, u8 *R, u8 *S, u8 *hash);
 void ec_priv_to_pub(u8 *k, u8 *Q);
 
 // compression
-void do_yaz0(u8 *in, u32 in_size, u8 *out, u32 out_size);
+void do_yaz0(u8 *in, u8 *out, u32 out_size);
 
 // error handling
 void fatal(const char *s, ...);

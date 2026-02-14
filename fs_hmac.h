@@ -7,7 +7,7 @@ typedef struct{
 	SHA1Context hash_ctx;
 } hmac_ctx;
 
-void hmac_init(hmac_ctx *ctx, const char *key, int key_size);
+void hmac_init(hmac_ctx *ctx, const unsigned char *key, int key_size);
 
 void hmac_update(hmac_ctx *ctx, const u8 *data, int size);
   
@@ -15,7 +15,7 @@ void hmac_final(hmac_ctx *ctx, unsigned char *hmac);
 
 void hmac_print(FILE *f,const unsigned char *hmac);
 
-void fs_hmac_set_key(const char *key, int key_size);
+void fs_hmac_set_key(const unsigned char *key, int key_size);
 
 void fs_hmac_meta(const unsigned char *super_data, short super_blk, unsigned char *hmac);
 
