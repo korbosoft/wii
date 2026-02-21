@@ -25,4 +25,9 @@ $(OBJS): %.o: %.c tools.h Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c $< -o $@
 
 clean:
-	-rm -f $(OBJS) $(PROGS)
+	-rm -rf $(OBJS) $(PROGS) dist
+
+dist:
+	mkdir dist
+	cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libcrypto-3-x64.dll dist/
+	cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/zlib1.dll dist/
