@@ -16,7 +16,7 @@ OBJS = $(patsubst %,%.o,$(PROGS) $(ZESTIG)) $(COMMON) $(ZESTIGL)
 all: $(PROGS) $(ZESTIG)
 
 $(PROGS): %: %.o $(COMMON) Makefile
-	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(LIBS) -lcrypto -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(LIBS) -o $@
 
 $(ZESTIG): %: %.o $(COMMON) $(ZESTIGL) Makefile
 	$(CC) $(CFLAGS) $(LDFLAGS) $< $(COMMON) $(ZESTIGL) $(LIBS) -o $@
