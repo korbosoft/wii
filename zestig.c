@@ -15,7 +15,7 @@
 #include "fs_hmac.h"
 #include "sha1.h"
 
-#define ZESTIG_VERSION_STRING "Zestig v1.1m by CaitSith2, original version by segher\n"
+#define ZESTIG_VERSION_STRING "Zestig v1.1m by CaitSith2, original version by segher\nmodified for windows by korbosoft\n"
   
 int verbosity_level = 0;
 int out_of_band = 0;
